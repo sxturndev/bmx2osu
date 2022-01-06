@@ -3,13 +3,13 @@
 # Imports
 import os, sys
 import PyQt5.QtWidgets as qtw
-from PyQt5.QtCore import QProcess
+from PyQt5.QtCore import QFile, QProcess
 
 convertTo7k = False
 convertSounds = False
 
 dirname = os.path.dirname(__file__)
-inputPath = os.path.join(dirname, 'input')
+inputPath = ''
 outputPath = os.path.join(dirname, 'output')
 
 class MainWindow(qtw.QWidget):
@@ -30,10 +30,12 @@ class MainWindow(qtw.QWidget):
 
         # Open file layout
         top = qtw.QHBoxLayout()
-        openFolder = qtw.QPushButton('Open Folder')
-        self.fileInput = qtw.QLineEdit()
-        top.addWidget(openFolder)
-        top.addWidget(self.fileInput)
+        self.openFolder = qtw.QPushButton('Open Folder')
+        self.folderInput = qtw.QLineEdit()
+        top.addWidget(self.openFolder)
+        top.addWidget(self.folderInput)
+
+        self.openFolder.clicked.connect(lambda: get_input(self))
         
         # Options layout
         options = qtw.QVBoxLayout()
@@ -52,7 +54,7 @@ class MainWindow(qtw.QWidget):
         bottom.addItem(spacer)
         bottom.addWidget(self.convert)
         
-        self.convert.clicked.connect(lambda: convertToOsu(self, inputPath))
+        self.convert.clicked.connect(convertToOsu)
 
         # Add Layouts
         converter.layout().addLayout(top)
@@ -76,18 +78,40 @@ class MainWindow(qtw.QWidget):
         self.outputBox.append(text)
 
 
-def handle_stdout(gui, process):
+def handle_stdout(process):
     line = process.readAllStandardOutput().data().decode('utf-8').strip()
-    print(line)
     mw.logger(line)
 
 
-def convertToOsu(gui, path):
-    gui.logger('CONVERTING to .OSU\n-----------------------')
+def handle_stderr(process):
+    line = process.readAllStandardError().data().decode('utf-8').strip()
+    mw.logger(line)
+
+
+def get_input(gui):
+    global inputPath
+    dir = qtw.QFileDialog.getExistingDirectory(
+        parent=gui,
+        caption='Open Song Directory',
+    )
+    inputPath = dir
+    gui.folderInput.setText(inputPath)
+
+
+def convertToOsu():
+    if (inputPath == ''):
+        mw.logger('No input path selected!')
+        return
+    else:
+        mw.logger(f'Input path: {inputPath}')
+        mw.logger(f'Output path: {outputPath}\n')
+
+    mw.logger('CONVERTING to .OSU\n-----------------------')
 
     bmt = QProcess()
-    bmt.readyReadStandardOutput.connect(lambda: handle_stdout(mw, bmt))
-    bmt.start('bmt.exe', ['-i', path, '-o', outputPath, '-type', 'osu'])
+    bmt.readyReadStandardOutput.connect(lambda: handle_stdout(bmt))
+    bmt.readyReadStandardError.connect(lambda: handle_stderr(bmt))
+    bmt.start('bmt.exe', ['-i', inputPath, '-o', outputPath, '-type', 'osu'])
     
 
 def convertAudio():

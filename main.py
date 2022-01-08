@@ -69,6 +69,7 @@ class MainWindow(qtw.QWidget):
         groupBox = qtw.QGroupBox('Output')
         groupBox.setLayout(qtw.QVBoxLayout())
         self.outputBox = qtw.QTextEdit()
+        self.outputBox.setReadOnly(True)
         groupBox.layout().addWidget(self.outputBox)
 
         output.layout().addWidget(groupBox)
@@ -110,18 +111,18 @@ def get_input():
 
 def convert():
     if (inputPath == ''):
-        mw.logger('No input path selected!')
+        mw.logger('<font color="red"><b>No input path selected!</b></font>')
         return
     if not (os.access(outputPath, os.F_OK)):
-        mw.logger('Output folder doesn\'t exist... Creating.')
+        mw.logger('<font color="red"><b>Output folder doesn\'t exist... Creating.</b></font>')
         os.mkdir(outputPath)
     if (len(os.listdir(outputPath)) != 0):
-        mw.logger('Files exist in output folder!')
+        mw.logger('<font color="red"><b>Files exist in output folder!</b></font>')
         return
 
     mw.logger(f'Input path: {inputPath}')
     mw.logger(f'Output path: {outputPath}\n')
-    mw.logger('CONVERTING to .OSU\n-----------------------')
+    mw.logger('<b>Starting conversion</b><br>-----------------------')
 
     # Disable UI when starting processing
     ui_state(False)
@@ -136,7 +137,7 @@ def convert():
 
 def finish_processing():
     global convertTo7k, convertSounds
-    mw.logger('\nFinished converting with bmtranslator\n')
+    mw.logger('<br><font color="green"><b>Finished converting with bmtranslator</b></font><br>-----------------------')
 
     convertTo7k = mw.include7k.isChecked()
     convertSounds = mw.convertAudio.isChecked()
@@ -146,32 +147,33 @@ def finish_processing():
         mw.logger('No folders found in output!')
         return
 
-    songs = []
-    for folder in folders:
-        songs.append(os.path.join(outputPath, folder))
-    
+    songs = list(map(lambda folder: os.path.join(outputPath, folder), folders))
+
     for song in songs:
-        mw.logger('Processing: ' + os.path.basename(song) + "\n")
+        mw.logger('<font color="blue"><b>Processing: ' + os.path.basename(song) + "</b></font><br>")
         if convertTo7k:
             convert7k(song)
         if convertSounds:
             convertAudio(song)
         zipToOsz(song)
+    mw.logger('<br><br><font size="6">FINISHED</b></font>')
     ui_state(True)
 
 
 def convert7k(song):
-    mw.logger('CONVERTING TO 7K\n-----------------------')
+    mw.logger(f'Converting {os.path.basename(song)} to 7 keys.')
+    difficulties = list(filter(lambda x: os.path.splitext(x)[1] == '.osu', os.listdir(song)))
+    difficulties = list(map(lambda x: os.path.join(song, x), difficulties))
 
+    mw.logger(f'Found {len(difficulties)} charts to convert.\n')
 
 def convertAudio(song):
-    mw.logger('CONVERTING AUDIO\n-----------------------')
+    mw.logger(f'Converting audio for {os.path.basename(song)}')
 
 
 def zipToOsz(song):
-    mw.logger('ZIPPING TO .OSZ\n-----------------------')
-
-    mw.logger('\n\nFINISHED')
+    mw.logger(f'<b>Zipping {os.path.basename(song)} to .osz</b><br>')
+    mw.logger('<font color="green"><b>Done</b></font><br>-----------------------')
 
 
 app = qtw.QApplication([])

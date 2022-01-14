@@ -32,7 +32,7 @@ With options to:
 Assuming everything converted properly, you should find the converted .osz files in an output folder inside the main program's folder.
 
 ## Contact & Help
-Join my [Discord Server](https://discord.gg/YVrvgYwMmq)
+Join my [Discord Server](https://discord.gg/9ckmwRTtBh)
 
 ## Credit & Thanks
 - [vysiondev](https://github.com/vysiondev) - For [bmtranslator](https://github.com/vysiondev/bmtranslator) and showing me how it works.

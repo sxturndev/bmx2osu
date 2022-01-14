@@ -10,7 +10,7 @@ With options to:
 
 ## Usage
 > #### Disclaimer
-> This program is expirimental and hasn't been tested thoroughly. So it may not work for all cases.
+> This program is experimental and hasn't been tested thoroughly. So it may not work for all cases.
 > It's recommended that you switch your system locale to Japanese or
 > enable UTF-8 support for file paths to work. 
 > [Short tutorial on where to find that.](https://youtu.be/3PUkcn8QbnE)

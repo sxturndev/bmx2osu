@@ -3,6 +3,7 @@ output
 bmt.exe
 old.py
 bmx2wav
+bmx2wavc.exe
 *.txt
 
 # Byte-compiled / optimized / DLL files

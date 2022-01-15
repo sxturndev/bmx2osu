@@ -14,7 +14,7 @@ audioNotConverted = []
 foldersZipped = 0
 progress = 0
 
-dirname = os.path.dirname(sys.executable) or os.path.dirname(__file__)
+dirname = os.path.dirname(sys.executable) # for PyInstaller
 inputPath = ''
 outputPath = os.path.join(dirname, 'output')
 

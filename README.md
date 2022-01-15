@@ -15,10 +15,18 @@ With options to:
 > enable UTF-8 support for file paths to work. 
 > [Short tutorial on where to find that.](https://youtu.be/3PUkcn8QbnE)
 
-1. Download the release [here](https://github.com/sxturndev/bmx2osu/releases/download/v1.0/release.zip) and extract it.
+1. Install ffmpeg, this is required for audio conversion to work. Press Windows + X and run Powershell as administrator, then paste these commands in:
+    ```powershell
+    Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+    ```
+    ```
+    choco install ffmpeg
+    ```
+
+2. Download the release [here](https://github.com/sxturndev/bmx2osu/releases/download/v1.0/release.zip) and extract it.
     - bmt.exe and bmx2wavc.exe must be in this folder for the program to work.
 
-2. Run bmx2osu.exe and select an input folder, bmx2osu batch converts BMS so your input structure should look something like this:
+3. Run bmx2osu.exe and select an input folder, bmx2osu batch converts BMS so your input structure should look something like this:
     ```
     input folder/
     ├─ BMS Song/
@@ -27,7 +35,7 @@ With options to:
     ├─ BMS Song/
     ├─ BMS Song/
     ```
-3. Select your options and then click Convert
+4. Select your options and then click Convert
 
 Assuming everything converted properly, you should find the converted .osz files in an output folder inside the main program's folder.
 

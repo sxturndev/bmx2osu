@@ -10,7 +10,7 @@ With options to:
 
 ## Usage
 > #### Disclaimer
-> This program is expirimental and hasn't been tested thoroughly. So it may not work for all cases.
+> This program is experimental and hasn't been tested thoroughly. So it may not work for all cases.
 > It's recommended that you switch your system locale to Japanese or
 > enable UTF-8 support for file paths to work. 
 > [Short tutorial on where to find that.](https://youtu.be/3PUkcn8QbnE)
@@ -40,7 +40,7 @@ With options to:
 Assuming everything converted properly, you should find the converted .osz files in an output folder inside the main program's folder.
 
 ## Contact & Help
-Join my [Discord Server](https://discord.gg/YVrvgYwMmq)
+Join my [Discord Server](https://discord.gg/9ckmwRTtBh)
 
 ## Credit & Thanks
 - [vysiondev](https://github.com/vysiondev) - For [bmtranslator](https://github.com/vysiondev/bmtranslator) and showing me how it works.

@@ -23,7 +23,7 @@ With options to:
     choco install ffmpeg
     ```
 
-2. Download the release [here](https://github.com/sxturndev/bmx2osu/releases/download/v1.0/release.zip) and extract it.
+2. Download the release [here](https://github.com/sxturndev/bmx2osu/releases/download/v1.0.1/release.v1.0.1.zip) and extract it.
     - bmt.exe and bmx2wavc.exe must be in this folder for the program to work.
 
 3. Run bmx2osu.exe and select an input folder, bmx2osu batch converts BMS so your input structure should look something like this:

@@ -1,10 +1,8 @@
-input
-output
-bmt.exe
-old.py
-bmx2wav
-bmx2wavc.exe
+*/
+*.exe
 *.txt
+old.py
+test.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

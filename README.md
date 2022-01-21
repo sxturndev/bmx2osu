@@ -2,8 +2,9 @@
 Convert BMS to osu!
 With options to: 
 - convert keysounds to one song file using [BMX2WAV](http://childs.squares.net/program/bmx2wav/v1/index.html)
-- include 7k version
+- include 7k version (two options; only 7k or both)
 - change Overall Difficulty and HP Drain Rate
+- remove extra files such as .bmp and converted bmx files
 - and more in the future(?)
 
 <img src="https://raw.githubusercontent.com/sxturndev/bmx2osu/main/preview.png" alt="preview" width="300"/>
@@ -23,7 +24,7 @@ With options to:
     choco install ffmpeg
     ```
 
-2. Download the release [here](https://github.com/sxturndev/bmx2osu/releases/download/v1.0.1/release.v1.0.1.zip) and extract it.
+2. Download the release [here](https://github.com/sxturndev/bmx2osu/releases/latest) and extract it.
     - bmt.exe and bmx2wavc.exe must be in this folder for the program to work.
 
 3. Run bmx2osu.exe and select an input folder, bmx2osu batch converts BMS so your input structure should look something like this:

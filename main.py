@@ -147,7 +147,9 @@ class postProcessing(QRunnable):
                     newFilePath = os.path.join(self.song, newFileName)
                     with open(newFilePath, 'w', encoding='utf-8') as file:
                         file.write('\n'.join(data))
+                        file.write('\n')
                         file.write('\n'.join(timingPoints))
+                        file.write('\n')
                         file.write('\n'.join(notes))
                     Tracking.convertedTo7k += 1
                     logger.debug(f'Wrote to file: {newFileName}')

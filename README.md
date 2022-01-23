@@ -40,12 +40,25 @@ With options to:
 
 Assuming everything converted properly, you should find the converted .osz files in an output folder inside the main program's folder.
 
+## Development
+[Python 3.10+](https://www.python.org/downloads/)
+
+[bmtranslator](https://github.com/sxturndev/bmtranslator)
+
+[BMX2WAV v1](http://childs.squares.net/program/bmx2wav/v1/index.html)
+
+Install python dependencies using:
+```
+pip install -r requirements.txt
+```
+
 ## Contact & Help
 Join my [Discord Server](https://discord.gg/9ckmwRTtBh)
 
 ## Credit & Thanks
 - [vysiondev](https://github.com/vysiondev) - For [bmtranslator](https://github.com/vysiondev/bmtranslator) and showing me how it works.
 - [temtan](https://github.com/temtan) - For BMX2WAV and permission to use it. [Website](http://childs.squares.net/)
+- [IceDynamix](https://github.com/IceDynamix) - Advice on formatting and managing a python project. Thank you!
 
 ## License
 Distributed under the MIT License. See the `LICENSE` file for more information.

@@ -10,7 +10,7 @@ import logging
 import time
 from datetime import timedelta
 import PyQt5.QtWidgets as qtw
-from PyQt5.QtCore import QProcess, QRunnable, QThreadPool, pyqtSignal, QObject
+from PyQt5.QtCore import QProcess, QRunnable, QThreadPool, pyqtSignal, QObject, Qt
 from pydub import AudioSegment
 
 dirname = os.path.dirname(__file__)
@@ -45,6 +45,7 @@ class Tracking():
 class WorkerSignals(QObject):
     textoutput = pyqtSignal(str)
     finished = pyqtSignal()
+    updateProgress = pyqtSignal()
 
     def printError(self, msg):
         logger.error(msg)
@@ -313,6 +314,7 @@ class postProcessing(QRunnable):
         # Start processing
         if not Settings.convertTo7k and not Settings.convertSounds and not Settings.removeFiles:
             logger.info('No options were given, skipping processing.')
+            self.signals.updateProgress.emit()
             self.signals.finished.emit()
             return
 
@@ -329,7 +331,9 @@ class postProcessing(QRunnable):
         logger.info(f'Finished processing {folderName}\n')
         self.signals.textoutput.emit(
             '<font color="green"><b>Done</b></font><br>-----------------------')
+        self.signals.updateProgress.emit()
         self.signals.finished.emit()
+
 
 # Thread for zipping folders to .osz
 
@@ -359,8 +363,10 @@ class zipToOsz(QRunnable):
                     f'Removed folder: {os.path.basename(folder)}\n')
                 logger.info(
                     f'Zipped {os.path.basename(output)} and deleted temp folder.')
+                self.signals.updateProgress.emit()
             except Exception:
                 self.signals.printError(f'An error occurred while trying to zip {os.path.basename(folder)}')
+                self.signals.updateProgress.emit()
 
         self.signals.finished.emit()
 
@@ -412,14 +418,31 @@ class MainWindow(qtw.QWidget):
             text='Remove extra files (.bmp, .bms, etc.)')
 
         diffOptions = qtw.QFormLayout()
-        self.od = qtw.QLineEdit()
-        self.od.setPlaceholderText('(Default 8.0)')
-        self.od.setFixedWidth(100)
-        self.hp = qtw.QLineEdit()
-        self.hp.setPlaceholderText('(Default 8.5)')
-        self.hp.setFixedWidth(100)
+        self.od = qtw.QDoubleSpinBox()
+        self.od.setMaximum(10.0)
+        self.od.setMinimum(0)
+        self.od.setValue(8.0)
+        self.od.setSingleStep(0.1)
+        self.od.setFixedWidth(55)
+
+        self.hp = qtw.QDoubleSpinBox()
+        self.hp.setMaximum(10.0)
+        self.hp.setMinimum(0)
+        self.hp.setValue(7.0)
+        self.hp.setSingleStep(0.1)
+        self.hp.setFixedWidth(55)
+
+        self.vol = qtw.QSpinBox()
+        self.vol.setMaximum(100)
+        self.vol.setMinimum(0)
+        self.vol.setSingleStep(5)
+        self.vol.setValue(60)
+        self.vol.setSuffix('%')
+        self.vol.setFixedWidth(55)
+
         diffOptions.addRow('OD:', self.od)
         diffOptions.addRow('HP:', self.hp)
+        diffOptions.addRow('Vol:', self.vol)
 
         options.addWidget(self.include7kBox)
         options.addWidget(self.convertAudioBox)
@@ -456,15 +479,22 @@ class MainWindow(qtw.QWidget):
         self.outputBox.setReadOnly(True)
         groupBox.layout().addWidget(self.outputBox)
 
+        self.progressBar = qtw.QProgressBar()
+        self.progressBar.setFormat('Progress: %p% (%v/%m)')
+        self.progressBar.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
         output.layout().addWidget(groupBox)
+        output.layout().addWidget(self.progressBar)
         self.layout().addLayout(output)
 
     # Update output box when called
     def updateOutput(self, text):
         self.outputBox.append(text)
 
-    # UI state toggle
+    def updateProgressBar(self):
+        self.progressBar.setValue(self.progressBar.value() + 1)
 
+    # UI state toggle
     def ui_state(self, enabled: bool):
         self.openFolder.setEnabled(enabled)
         self.folderInput.setEnabled(enabled)
@@ -474,6 +504,10 @@ class MainWindow(qtw.QWidget):
         self.convert_btn.setEnabled(enabled)
         self.od.setEnabled(enabled)
         self.hp.setEnabled(enabled)
+        self.vol.setEnabled(enabled)
+        self.progressBar.setValue(0)
+        self.progressBar.setMaximum(0)
+        self.progressBar.setTextVisible(not enabled)
 
     # Pipe stdout and stderr for bmtranslator
 
@@ -542,16 +576,13 @@ class MainWindow(qtw.QWidget):
 
         # Add args for bmtranslator
         def args():
-            overallDifficulty = self.od.text()
-            hpDrainRate = self.hp.text()
+            overallDifficulty = str(round(self.od.value(), 2))
+            hpDrainRate = str(round(self.hp.value(), 2))
+            volume = str(self.vol.value())
 
-            args = ['-i', inputPath, '-o', outputPath, '-type', 'osu']
-            if overallDifficulty != '':
-                args.append('-od')
-                args.append(overallDifficulty)
-            if hpDrainRate != '':
-                args.append('-hp')
-                args.append(hpDrainRate)
+            args = ['-i', inputPath, '-o', outputPath, '-type', 'osu',
+                    '-vol', volume, '-od', overallDifficulty, '-hp', hpDrainRate]
+
             if Settings.removeFiles:
                 args.append('-no-storyboard')
             self.updateOutput(f'bmt.exe {" ".join(args)}\n')
@@ -585,6 +616,9 @@ class MainWindow(qtw.QWidget):
         # Create paths
         songs = list(map(lambda folder: os.path.join(
             outputPath, folder), folders))
+        self.progressBar.setValue(0)
+        self.progressBar.setMaximum(len(songs))
+        self.progressBar.setTextVisible(True)
 
         def finish():
             elapsed = timedelta(seconds=round(time.time() - Tracking.startTime))
@@ -610,9 +644,13 @@ class MainWindow(qtw.QWidget):
         def checkProgress():
             Tracking.progress += 1
             if (Tracking.progress == len(songs)):
+                self.progressBar.setFormat('Zipping to .osz: %p% (%v/%m)')
+                self.progressBar.setValue(0)
+                self.progressBar.setMaximum(len(songs))  # Reset Progress Bar
                 worker = zipToOsz(songs)
                 worker.signals.textoutput.connect(self.updateOutput)
                 worker.signals.finished.connect(finish)
+                worker.signals.updateProgress.connect(self.updateProgressBar)
                 self.pool.start(worker)
 
         # Queue worker thread for each song in output folder
@@ -621,6 +659,7 @@ class MainWindow(qtw.QWidget):
             worker = postProcessing(song)
             worker.signals.textoutput.connect(self.updateOutput)
             worker.signals.finished.connect(checkProgress)
+            worker.signals.updateProgress.connect(self.updateProgressBar)
             self.pool.start(worker)
 
 

@@ -9,6 +9,7 @@ Convert BMS to osu!
 - convert keysounds to one song file using [BMX2WAV][bmx2wav]
 - include 7k version (two options; only 7k or both)
 - change Overall Difficulty and HP Drain Rate
+- adjust hitsound volume
 - remove extra files such as .bmp and converted bmx files
 - and more in the future(?)
 
